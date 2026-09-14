@@ -11,10 +11,10 @@ jobs:
 
     steps:
 
-      - name: Chcekout
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: az login
+      - name: Azure Login
         run: |
           az login \
             --service-principal \
@@ -25,7 +25,7 @@ jobs:
           az account set \
             --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
 
-      - name: setup terraform
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
@@ -40,7 +40,6 @@ jobs:
       - name: Terraform Plan
         run: terraform plan
 
-      # SonarQube
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
