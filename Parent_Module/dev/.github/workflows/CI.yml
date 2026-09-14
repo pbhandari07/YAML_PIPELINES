@@ -1,0 +1,39 @@
+name: CI_Pipeline
+on:
+  push:
+    branches:
+      - main
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Chcekout
+        uses: actions/checkout@v4
+        
+
+      - name: az login
+        run: |
+         az login \
+          --service-principle \
+          --username "${{ scerate.AZURE_CLIENT_ID}}" \
+          --password "${{ scerate. AZURE_CLIENT_SCERATE}}" \
+          --tenent "${{ scerate.AZURE_TENENT_ID}}"
+
+         az account set \
+          --subscription "${{ scerate.AZURE_SUBSCRIPTION_ID}}"
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: Terraform Init
+        uses: terraform init
+      - name: Terraform Fmt
+        uses: terraform fmt
+      - name: Terraform Validate
+        uses: terraform validate
+      - name: Terraform Plan
+        uses: terraform plan
+      # SonarQube
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
