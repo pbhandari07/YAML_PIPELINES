@@ -3,7 +3,7 @@ name: CI_Pipeline
 on:
   push:
     branches:
-      - main
+      - feature
 
 jobs:
   terraform:
@@ -15,15 +15,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Azure Login
-        run: |
-          az login \
-            --service-principal \
-            --username "${{ secrets.AZURE_CLIENT_ID }}" \
-            --password "${{ secrets.AZURE_CLIENT_SCERATE }}" \
-            --tenant "${{ secrets.AZURE_TENENT_ID }}"
-
-          az account set \
-            --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SCERATE }}
+          tenant-id: ${{ secrets.AZURE_TENENT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -45,4 +42,3 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          #END JOB
